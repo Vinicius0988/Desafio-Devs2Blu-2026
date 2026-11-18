@@ -31,6 +31,11 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -68,7 +73,7 @@
 			<version>0.13.0</version>
 		</dependency>
 
-		<!-- JJWT - Implementação -->
+		<!-- JJWT - ImplementaÃ§Ã£o -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
@@ -76,7 +81,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- JJWT - Integração com Jackson -->
+		<!-- JJWT - IntegraÃ§Ã£o com Jackson -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
