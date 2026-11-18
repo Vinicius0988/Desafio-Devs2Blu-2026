@@ -1,7 +1,7 @@
-package AgroBoi.demo.domain.dto.response;
+package AgroBoi.domain.dto.response;
 
-import AgroBoi.demo.domain.enums.Sexo;
-import AgroBoi.demo.domain.enums.StatusAnimal;
+import AgroBoi.domain.enums.Sexo;
+import AgroBoi.domain.enums.StatusAnimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

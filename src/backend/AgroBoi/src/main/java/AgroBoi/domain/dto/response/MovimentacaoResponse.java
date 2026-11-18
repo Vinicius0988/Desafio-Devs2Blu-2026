@@ -1,7 +1,7 @@
-package AgroBoi.demo.domain.dto.response;
+package AgroBoi.domain.dto.response;
 
-import AgroBoi.demo.domain.enums.MotivoMovimentacao;
-import AgroBoi.demo.domain.enums.TipoMovimentacao;
+import AgroBoi.domain.enums.MotivoMovimentacao;
+import AgroBoi.domain.enums.TipoMovimentacao;
 import java.time.LocalDate;
 
 public record MovimentacaoResponse(

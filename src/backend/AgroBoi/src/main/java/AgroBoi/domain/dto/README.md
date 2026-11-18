@@ -9,4 +9,4 @@
 - Campos opcionais podem ser nulos. Validações de obrigatoriedade, tamanho, valores positivos e coerência deverão ser aplicadas na camada de serviço ou com Bean Validation ao implementar os endpoints.
 - Estes DTOs não implementam login, conversão automática de entidades ou endpoints.
 
-Os arquivos acompanham a pasta domain atual. O pacote declarado segue AgroBoi.demo.domain, como as entidades e enums existentes; há uma reorganização local de pastas ainda não consolidada.
+Os pacotes seguem as pastas: AgroBoi.domain.dto.request e AgroBoi.domain.dto.response.

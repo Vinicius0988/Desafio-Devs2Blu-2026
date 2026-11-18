@@ -1,7 +1,7 @@
-package AgroBoi.demo.domain.dto.request;
+package AgroBoi.domain.dto.request;
 
-import AgroBoi.demo.domain.enums.ResultadoReproducao;
-import AgroBoi.demo.domain.enums.TipoReproducao;
+import AgroBoi.domain.enums.ResultadoReproducao;
+import AgroBoi.domain.enums.TipoReproducao;
 import java.time.LocalDate;
 
 public record ReproducaoRequest(

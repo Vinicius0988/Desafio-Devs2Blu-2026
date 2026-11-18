@@ -1,6 +1,6 @@
-package AgroBoi.demo.domain.dto.request;
+package AgroBoi.domain.dto.request;
 
-import AgroBoi.demo.domain.enums.TipoSanitario;
+import AgroBoi.domain.enums.TipoSanitario;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

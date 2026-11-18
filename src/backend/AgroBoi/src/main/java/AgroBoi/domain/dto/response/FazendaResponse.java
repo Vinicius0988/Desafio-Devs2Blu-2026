@@ -1,4 +1,4 @@
-package AgroBoi.demo.domain.dto.response;
+package AgroBoi.domain.dto.response;
 
 
 public record FazendaResponse(

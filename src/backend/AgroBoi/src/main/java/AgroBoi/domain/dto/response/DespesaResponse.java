@@ -1,6 +1,6 @@
-package AgroBoi.demo.domain.dto.response;
+package AgroBoi.domain.dto.response;
 
-import AgroBoi.demo.domain.enums.CategoriaDespesa;
+import AgroBoi.domain.enums.CategoriaDespesa;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

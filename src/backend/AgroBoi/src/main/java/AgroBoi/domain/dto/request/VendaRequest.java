@@ -1,4 +1,4 @@
-package AgroBoi.demo.domain.dto.request;
+package AgroBoi.domain.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
