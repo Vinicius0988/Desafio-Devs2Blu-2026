@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>AgroBoi</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>agroboi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name />
+	<name>AgroBoi</name>
 	<description />
 	<url />
 	<licenses>
