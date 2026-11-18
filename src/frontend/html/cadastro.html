@@ -1,32 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agroboi</title>
-</head>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AgroBoi — Cadastro de animal</title></head>
 <body>
-    <h1>Cadastro</h1>
-    <form>
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required>
-        <br><br>
-        <label for="raca">Raça:</label>
-        <input type="text" id="raca" name="raca" required>
-        <br><br>
-        <label for="idade">Idade:</label>
-        <input type="number" id="idade" name="idade" required>
-        <br><br>
-        <label for="peso">Peso:</label>
-        <input type="number" id="peso" name="peso" required>
-        <br><br>
-        <label for="sexo">Sexo:</label>
-        <input type="text" id="sexo" name="sexo" required>
-        <br><br>
-        <label for="historico">Histórico:</label>
-        <input type="text" id="historico" name="historico" required>
-        <br><br>
-        <input type="submit" value="Cadastrar">
-    </form>
-</body>
-</html>
+<h1>Cadastro de animal</h1>
+<form id="animal-form">
+<p><label for="identificacao">Identificação / brinco</label><br><input id="identificacao" name="identificacao" type="text" required maxlength="50"></p>
+<p><label for="nome">Nome</label><br><input id="nome" name="nome" type="text" maxlength="100"></p>
+<p><label for="dataNascimento">Data de nascimento</label><br><input id="dataNascimento" name="dataNascimento" type="date"></p>
+<p><label for="racaId">ID da raça cadastrada</label><br><input id="racaId" name="racaId" type="number" min="1" step="1"></p>
+<p><label for="maeId">ID da mãe cadastrada</label><br><input id="maeId" name="maeId" type="number" min="1" step="1"></p>
+<p><label for="paiId">ID do pai cadastrado</label><br><input id="paiId" name="paiId" type="number" min="1" step="1"></p>
+<p><label for="sexo">Sexo</label><select id="sexo" name="sexo" required><option value="">Selecione</option><option value="MACHO">Macho</option><option value="FEMEA">Fêmea</option></select></p>
+<p><label for="observacoes">Observações</label><br><textarea id="observacoes" name="observacoes"></textarea></p>
+<p>O cadastro será disponibilizado quando a integração estiver concluída.</p>
+<button type="button" disabled>Cadastrar</button>
+</form>
+<script src="../js/cadastro.js"></script>
+</body></html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,14 +7,16 @@
 </head>
 <body>
     <h1>Login</h1>
-    <form>
+    <form id="login-form" method="post">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
         <br><br>
         <label for="senha">Senha:</label>
         <input type="password" id="senha" name="senha" required>
         <br><br>
-        <input type="submit" value="Entrar">
+        <button type="button" disabled>Entrar</button>
+        <p>O acesso será disponibilizado quando a integração estiver concluída.</p>
     </form>
+<script src="../js/login.js"></script>
 </body>
 </html>
