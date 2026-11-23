@@ -1,12 +1,164 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agroboi - Animais</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastro e gerenciamento do rebanho bovino AgroBoi.">
+  <title>Rebanho | AgroBoi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/animais.css">
+  <script src="../js/animais.js" defer></script>
 </head>
+
 <body>
-    <h1>Animais</h1>
-    <p>Bem-vindo à página de animais!</p>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="dashboard.html"><span class="brand-mark">A</span><span>AgroBoi</span></a>
+      <div class="sidebar-label">MENU PRINCIPAL</div>
+      <nav class="navigation" aria-label="Menu principal">
+        <a class="nav-link" href="dashboard.html"><span class="nav-icon">▦</span>Dashboard</a>
+        <a class="nav-link active" href="animais.html" aria-current="page"><span class="nav-icon">♧</span>Rebanho</a>
+        <a class="nav-link" href="saude.html"><span class="nav-icon">✚</span>Saúde e vacinação</a>
+        <a class="nav-link" href="alimentacao.html"><span class="nav-icon">⌁</span>Alimentação</a>
+        <a class="nav-link" href="pesagem.html"><span class="nav-icon">⚖</span>Pesagem</a>
+        <a class="nav-link" href="reproducao.html"><span class="nav-icon">♡</span>Reprodução</a>
+        <a class="nav-link" href="financeiro.html"><span class="nav-icon">＄</span>Financeiro</a>
+        <a class="nav-link" href="relatorios.html"><span class="nav-icon">▤</span>Relatórios</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="farm-card"><span class="farm-icon">⌂</span>
+          <div><strong>Minha propriedade</strong><small>Gestão da fazenda</small></div>
+        </div>
+        <a class="logout-link" href="login.html"><span>↪</span> Sair da conta</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+        <div class="breadcrumb"><a href="dashboard.html">Visão geral</a><span>/</span><strong>Rebanho</strong></div>
+        <div class="user-area">
+          <div class="today" id="todayDate"></div>
+          <div class="avatar">P</div>
+          <div class="user-info"><strong>Produtor</strong><small>Administrador</small></div>
+        </div>
+      </header>
+
+      <section class="page-content">
+        <div class="page-heading">
+          <div><span class="eyebrow">CONTROLE DO REBANHO</span>
+            <h1>Gerenciamento de bovinos</h1>
+            <p>Cadastre, consulte e mantenha os dados dos animais organizados.</p>
+          </div>
+          <button class="primary-button" id="newAnimalButton" type="button">＋ Cadastrar animal</button>
+        </div>
+
+        <section class="summary-grid">
+          <article class="summary-card"><span>Total de animais</span><strong
+              id="totalAnimals">4</strong><small>Registros no sistema</small></article>
+          <article class="summary-card"><span>Ativos</span><strong id="activeAnimals">3</strong><small>Animais no
+              rebanho</small></article>
+          <article class="summary-card"><span>Em acompanhamento</span><strong
+              id="monitorAnimals">1</strong><small>Precisam de atenção</small></article>
+        </section>
+
+        <section class="panel form-panel" id="animalFormPanel">
+          <div class="panel-heading">
+            <div>
+              <h2 id="formTitle">Cadastrar novo bovino</h2>
+              <p>Preencha as informações para adicionar um animal ao rebanho.</p>
+            </div><button class="close-button" id="closeFormButton" type="button"
+              aria-label="Fechar formulário">×</button>
+          </div>
+          <form id="animalForm">
+            <input type="hidden" id="animalId">
+            <div class="form-grid">
+              <div class="field"><label for="identification">Número de identificação *</label><input id="identification"
+                  name="identification" placeholder="Ex.: 029" required maxlength="20"></div>
+              <div class="field"><label for="name">Nome do animal</label><input id="name" name="name"
+                  placeholder="Ex.: Mimosa" maxlength="60"></div>
+              <div class="field"><label for="breed">Raça *</label><select id="breed" name="breed" required>
+                  <option value="">Selecione a raça</option>
+                  <option>Nelore</option>
+                  <option>Angus</option>
+                  <option>Holandesa</option>
+                  <option>Jersey</option>
+                  <option>Hereford</option>
+                  <option>Girolando</option>
+                  <option>Outra</option>
+                </select></div>
+              <div class="field"><label for="sex">Sexo *</label><select id="sex" name="sex" required>
+                  <option value="">Selecione</option>
+                  <option>Fêmea</option>
+                  <option>Macho</option>
+                </select></div>
+              <div class="field"><label for="birthDate">Data de nascimento</label><input id="birthDate" name="birthDate"
+                  type="date"></div>
+              <div class="field"><label for="weight">Peso inicial (kg)</label><input id="weight" name="weight"
+                  type="number" min="0" step="0.1" placeholder="Ex.: 350"></div>
+              <div class="field"><label for="origin">Origem</label><input id="origin" name="origin"
+                  placeholder="Ex.: Nascido na propriedade"></div>
+              <div class="field"><label for="status">Situação *</label><select id="status" name="status" required>
+                  <option value="Ativo">Ativo</option>
+                  <option value="Em acompanhamento">Em acompanhamento</option>
+                  <option value="Vendido">Vendido</option>
+                  <option value="Inativo">Inativo</option>
+                </select></div>
+            </div>
+            <div class="form-actions"><span class="required-note">* Campos obrigatórios</span><button
+                class="secondary-button" id="cancelButton" type="button">Cancelar</button><button class="primary-button"
+                type="submit" id="saveButton">Salvar animal</button></div>
+            <p class="form-feedback" id="formFeedback" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="panel list-panel">
+          <div class="list-heading">
+            <div>
+              <h2>Animais cadastrados</h2>
+              <p>Consulte e gerencie os registros da propriedade.</p>
+            </div>
+            <div class="list-tools"><input id="searchInput" type="search"
+                placeholder="Buscar por nome ou identificação..." aria-label="Buscar animais"><select id="statusFilter"
+                aria-label="Filtrar por situação">
+                <option value="">Todas as situações</option>
+                <option>Ativo</option>
+                <option>Em acompanhamento</option>
+                <option>Vendido</option>
+                <option>Inativo</option>
+              </select></div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Identificação</th>
+                  <th>Nome</th>
+                  <th>Raça</th>
+                  <th>Sexo</th>
+                  <th>Nascimento</th>
+                  <th>Peso</th>
+                  <th>Situação</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="animalsTable"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="emptyState" hidden>Nenhum animal encontrado. Ajuste a busca ou cadastre um novo
+            bovino.</div>
+          <p class="table-note">Os registros são armazenados neste navegador para demonstração. A persistência
+            definitiva será feita pelo Backend e banco de dados.</p>
+        </section>
+        <footer class="footer">© <span id="currentYear"></span> AgroBoi · Sistema de Gestão de Rebanhos Bovinos</footer>
+      </section>
+    </main>
+  </div>
 </body>
+
 </html>

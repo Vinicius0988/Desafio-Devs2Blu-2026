@@ -1,0 +1,358 @@
+/* Módulo Saúde e vacinação */
+.health-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin: 8px 0 24px
+}
+
+.health-stat {
+    background: #fff;
+    border: 1px solid #e8eee9;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 3px 12px rgba(22, 55, 35, .035)
+}
+
+.health-stat .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #eaf3ec;
+    color: #28643d;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    font-weight: 700
+}
+
+.health-stat.warning .stat-icon {
+    background: #fff4df;
+    color: #a96c0c
+}
+
+.health-stat.danger .stat-icon {
+    background: #fdebea;
+    color: #b83e36
+}
+
+.health-stat small,
+.health-stat span:not(.stat-icon) {
+    display: block;
+    color: #7b887e;
+    font-size: 12px
+}
+
+.health-stat strong {
+    display: block;
+    font-size: 27px;
+    color: #203b2a;
+    line-height: 1.35
+}
+
+.health-panel {
+    background: #fff;
+    border: 1px solid #e8eee9;
+    border-radius: 15px;
+    padding: 24px;
+    box-shadow: 0 3px 12px rgba(22, 55, 35, .035)
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px
+}
+
+.panel-heading h2 {
+    margin: 5px 0;
+    font-size: 21px;
+    color: #203b2a
+}
+
+.panel-heading p {
+    margin: 0;
+    color: #7b887e;
+    font-size: 13px
+}
+
+.eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: #78917d
+}
+
+.primary-btn,
+.secondary-btn {
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 16px;
+    font-weight: 650;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px
+}
+
+.primary-btn {
+    background: #245b38;
+    color: white
+}
+
+.primary-btn:hover {
+    background: #19472b
+}
+
+.secondary-btn {
+    background: #edf1ed;
+    color: #405447
+}
+
+.health-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 17px
+}
+
+.health-toolbar input,
+.health-toolbar select {
+    border: 1px solid #dfe7e0;
+    border-radius: 8px;
+    padding: 11px 12px;
+    background: #fff;
+    color: #304337;
+    font: inherit;
+    font-size: 13px
+}
+
+.health-toolbar input {
+    flex: 1;
+    min-width: 180px
+}
+
+.health-toolbar select {
+    min-width: 155px
+}
+
+.table-wrap {
+    overflow-x: auto
+}
+
+.health-table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap
+}
+
+.health-table th {
+    text-align: left;
+    color: #819087;
+    font-size: 10px;
+    letter-spacing: .6px;
+    padding: 12px;
+    border-bottom: 1px solid #e9eee9
+}
+
+.health-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eff2ef;
+    font-size: 12px;
+    color: #435348
+}
+
+.animal-cell strong {
+    display: block;
+    color: #294332;
+    font-size: 13px
+}
+
+.animal-cell small {
+    color: #87938a
+}
+
+.status-pill {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 5px 9px;
+    font-size: 10px;
+    font-weight: 700
+}
+
+.status-pill.ok {
+    background: #e8f4eb;
+    color: #347447
+}
+
+.status-pill.soon {
+    background: #fff2dc;
+    color: #9a650e
+}
+
+.status-pill.late {
+    background: #fbe9e7;
+    color: #b43f37
+}
+
+.table-action {
+    border: 0;
+    background: transparent;
+    color: #477254;
+    cursor: pointer;
+    font-weight: 650;
+    font-size: 12px;
+    margin-right: 8px
+}
+
+.table-action.delete {
+    color: #b34a42
+}
+
+.empty-state {
+    text-align: center;
+    padding: 35px;
+    color: #849087;
+    font-size: 13px
+}
+
+.health-note {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #f0f5f0;
+    color: #66776b;
+    font-size: 12px;
+    line-height: 1.6
+}
+
+.health-note strong {
+    color: #345640
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 34, 22, .48);
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    z-index: 20
+}
+
+.modal-backdrop[hidden] {
+    display: none
+}
+
+.health-modal {
+    background: #fff;
+    width: min(590px, 100%);
+    max-height: 92vh;
+    overflow: auto;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 20px 70px rgba(0, 0, 0, .2)
+}
+
+.modal-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px
+}
+
+.modal-heading h2 {
+    margin: 5px 0;
+    color: #203b2a
+}
+
+.close-modal {
+    border: 0;
+    background: #f0f3f0;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    font-size: 23px;
+    cursor: pointer;
+    color: #405447
+}
+
+.health-modal form>label,
+.form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    font-weight: 650;
+    color: #405447
+}
+
+.health-modal input,
+.health-modal select,
+.health-modal textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dfe7e0;
+    border-radius: 8px;
+    padding: 11px;
+    font: inherit;
+    font-size: 13px;
+    color: #304337;
+    background: #fff
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 13px
+}
+
+.health-modal textarea {
+    resize: vertical
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 8px
+}
+
+.form-feedback {
+    color: #b43f37;
+    font-size: 12px;
+    min-height: 16px
+}
+
+@media(max-width:760px) {
+    .health-summary {
+        grid-template-columns: 1fr
+    }
+
+    .panel-heading {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .health-toolbar {
+        flex-direction: column
+    }
+
+    .health-toolbar input,
+    .health-toolbar select {
+        width: 100%;
+        box-sizing: border-box
+    }
+
+    .health-panel {
+        padding: 17px
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr
+    }
+}

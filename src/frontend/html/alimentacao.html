@@ -1,13 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agroboi - Alimentação</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alimentação | AgroBoi</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/alimentacao.css">
+  <script src="../js/alimentacao.js" defer></script>
 </head>
 <body>
-    <h1>Alimentação</h1>
-    <p>Bem-vindo à página de alimentação!</p>
-    
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><span class="brand-mark">A</span><div><strong>AgroBoi</strong><small>Gestão rural</small></div></div>
+      <nav class="side-nav">
+        <span class="nav-label">MENU PRINCIPAL</span>
+        <a href="dashboard.html">▦ <span>Dashboard</span></a>
+        <a href="animais.html">♧ <span>Rebanho</span></a>
+        <a href="saude.html">✚ <span>Saúde e vacinação</span></a>
+        <a class="active" href="alimentacao.html">◉ <span>Alimentação</span></a>
+        <a href="pesagem.html">⚖ <span>Pesagem</span></a>
+        <a href="reproducao.html">♡ <span>Reprodução</span></a>
+        <a href="financeiro.html">＄ <span>Financeiro</span></a>
+        <a href="relatorios.html">▤ <span>Relatórios</span></a>
+      </nav>
+      <div class="sidebar-footer"><span class="avatar">CA</span><div><strong>Administrador</strong><small>AgroBoi</small></div></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+        <div><span class="eyebrow">MANEJO DO REBANHO</span><h1>Alimentação</h1></div>
+        <div class="topbar-date" id="todayDate"></div>
+      </header>
+
+      <section class="feed-summary">
+        <article class="feed-stat"><span class="feed-icon">◉</span><div><small>Registros de alimentação</small><strong id="totalEntries">0</strong><span>Histórico cadastrado</span></div></article>
+        <article class="feed-stat"><span class="feed-icon amber">▤</span><div><small>Consumo registrado</small><strong id="totalQuantity">0 kg</strong><span>Quantidade total</span></div></article>
+        <article class="feed-stat"><span class="feed-icon blue">＄</span><div><small>Custo registrado</small><strong id="totalCost">R$ 0,00</strong><span>Soma dos lançamentos</span></div></article>
+      </section>
+
+      <section class="feed-panel">
+        <div class="feed-heading">
+          <div><span class="eyebrow">CONTROLE DE CONSUMO</span><h2>Registros de alimentação</h2><p>Acompanhe rações, suplementos, quantidades e custos.</p></div>
+          <button class="primary-btn" id="openForm">＋ Registrar alimentação</button>
+        </div>
+        <div class="feed-toolbar">
+          <input id="searchFeed" type="search" placeholder="Buscar por animal, alimento ou lote...">
+          <select id="categoryFilter" aria-label="Filtrar categoria"><option value="">Todas as categorias</option><option value="Ração">Ração</option><option value="Pastagem">Pastagem</option><option value="Suplemento">Suplemento</option><option value="Outro">Outro</option></select>
+        </div>
+        <div class="feed-table-wrap">
+          <table class="feed-table">
+            <thead><tr><th>Animal / lote</th><th>Categoria</th><th>Alimento</th><th>Quantidade</th><th>Data</th><th>Custo</th><th>Ações</th></tr></thead>
+            <tbody id="feedTableBody"></tbody>
+          </table>
+          <div class="feed-empty" id="emptyState" hidden>Nenhum registro encontrado.</div>
+        </div>
+      </section>
+      <section class="feed-tip"><strong>Gestão do manejo:</strong> registre as quantidades na mesma unidade para facilitar a comparação do consumo. Ajuste a dieta com orientação de profissional habilitado.</section>
+    </main>
+  </div>
+
+  <div class="feed-modal-backdrop" id="feedModal" hidden>
+    <section class="feed-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="feed-modal-heading"><div><span class="eyebrow">MANEJO ALIMENTAR</span><h2 id="modalTitle">Novo registro</h2></div><button class="feed-close" id="closeForm" aria-label="Fechar">×</button></div>
+      <form id="feedForm">
+        <input type="hidden" id="entryId">
+        <label>Identificação do animal ou lote<input id="animalOrGroup" required maxlength="35" placeholder="Ex.: Lote 01 ou animal 025"></label>
+        <div class="feed-form-grid">
+          <label>Categoria<select id="category" required><option value="Ração">Ração</option><option value="Pastagem">Pastagem</option><option value="Suplemento">Suplemento</option><option value="Outro">Outro</option></select></label>
+          <label>Alimento / produto<input id="feedName" required maxlength="70" placeholder="Ex.: Ração de engorda"></label>
+          <label>Quantidade (kg)<input id="quantity" type="number" min="0.01" step="0.01" required placeholder="Ex.: 25"></label>
+          <label>Data do fornecimento<input id="feedDate" type="date" required></label>
+          <label>Custo (R$)<input id="cost" type="number" min="0" step="0.01" placeholder="Ex.: 85,00"></label>
+        </div>
+        <label>Observações<textarea id="feedNotes" rows="3" maxlength="300" placeholder="Informações adicionais (opcional)"></textarea></label>
+        <div class="feed-form-actions"><button type="button" class="secondary-btn" id="cancelForm">Cancelar</button><button type="submit" class="primary-btn">Salvar registro</button></div>
+        <p class="feed-feedback" id="formFeedback" role="alert"></p>
+      </form>
+    </section>
+  </div>
 </body>
 </html>

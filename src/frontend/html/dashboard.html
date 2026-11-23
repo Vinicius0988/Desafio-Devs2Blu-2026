@@ -1,12 +1,157 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agroboi - Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel de gestão do rebanho AgroBoi.">
+  <title>Dashboard | AgroBoi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <script src="../js/dashboard.js" defer></script>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>Bem-vindo à página do dashboard!</p>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">A</span>
+        <span>AgroBoi</span>
+      </a>
+
+      <div class="sidebar-label">MENU PRINCIPAL</div>
+      <nav class="navigation" aria-label="Menu principal">
+        <a class="nav-link active" href="dashboard.html" aria-current="page">
+          <span class="nav-icon">▦</span><span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="animais.html">
+          <span class="nav-icon">♧</span><span>Rebanho</span>
+        </a>
+        <a class="nav-link" href="saude.html">
+          <span class="nav-icon">✚</span><span>Saúde e vacinação</span>
+        </a>
+        <a class="nav-link" href="alimentacao.html">
+          <span class="nav-icon">⌁</span><span>Alimentação</span>
+        </a>
+        <a class="nav-link" href="pesagem.html">
+          <span class="nav-icon">⚖</span><span>Pesagem</span>
+        </a>
+        <a class="nav-link" href="reproducao.html">
+          <span class="nav-icon">♡</span><span>Reprodução</span>
+        </a>
+        <a class="nav-link" href="financeiro.html">
+          <span class="nav-icon">＄</span><span>Financeiro</span>
+        </a>
+        <a class="nav-link" href="relatorios.html">
+          <span class="nav-icon">▤</span><span>Relatórios</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="farm-card">
+          <span class="farm-icon">⌂</span>
+          <div><strong>Minha propriedade</strong><small>Gestão da fazenda</small></div>
+        </div>
+        <a class="logout-link" href="login.html"><span>↪</span> Sair da conta</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+        <div class="breadcrumb">Visão geral <span>/</span> <strong>Dashboard</strong></div>
+        <div class="user-area">
+          <div class="today" id="todayDate"></div>
+          <div class="avatar" aria-hidden="true">P</div>
+          <div class="user-info"><strong>Produtor</strong><small>Administrador</small></div>
+        </div>
+      </header>
+
+      <section class="page-content">
+        <div class="page-heading">
+          <div>
+            <span class="eyebrow">PAINEL DE CONTROLE</span>
+            <h1>Visão geral</h1>
+            <p>Acompanhe os principais indicadores da sua propriedade.</p>
+          </div>
+          <a class="primary-button" href="animais.html">＋ Cadastrar animal</a>
+        </div>
+
+        <section class="stats-grid" aria-label="Indicadores do rebanho">
+          <article class="stat-card">
+            <div class="stat-top"><span>Total de bovinos</span><span class="stat-icon green">♧</span></div>
+            <strong class="stat-value" data-count="250">250</strong>
+            <span class="stat-caption">Animais cadastrados</span>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Vacinações pendentes</span><span class="stat-icon amber">✚</span></div>
+            <strong class="stat-value" data-count="12">12</strong>
+            <span class="stat-caption">Precisam de acompanhamento</span>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Pesagens no mês</span><span class="stat-icon blue">⚖</span></div>
+            <strong class="stat-value" data-count="45">45</strong>
+            <span class="stat-caption">Registros realizados</span>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span>Nascimentos no mês</span><span class="stat-icon purple">♡</span></div>
+            <strong class="stat-value" data-count="8">8</strong>
+            <span class="stat-caption">Bezerros registrados</span>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <article class="panel chart-panel">
+            <div class="panel-heading">
+              <div><h2>Evolução do rebanho</h2><p>Quantidade de animais por mês</p></div>
+              <span class="period-tag">Últimos 6 meses</span>
+            </div>
+            <div class="chart" role="img" aria-label="Gráfico ilustrativo da evolução do rebanho de janeiro a junho">
+              <div class="chart-y-labels"><span>300</span><span>250</span><span>200</span><span>150</span><span>100</span></div>
+              <div class="chart-area">
+                <div class="grid-lines"><i></i><i></i><i></i><i></i><i></i></div>
+                <svg viewBox="0 0 600 210" preserveAspectRatio="none" aria-hidden="true">
+                  <defs><linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4f8a63" stop-opacity=".22"/><stop offset="100%" stop-color="#4f8a63" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 160 C55 151 70 145 120 143 S205 126 240 125 S325 105 360 108 S445 80 480 83 S555 57 600 48 L600 210 L0 210Z" fill="url(#areaFill)"/>
+                  <path d="M0 160 C55 151 70 145 120 143 S205 126 240 125 S325 105 360 108 S445 80 480 83 S555 57 600 48" fill="none" stroke="#36764d" stroke-width="3" vector-effect="non-scaling-stroke"/>
+                  <g fill="#fff" stroke="#36764d" stroke-width="2" vector-effect="non-scaling-stroke"><circle cx="0" cy="160" r="4"/><circle cx="120" cy="143" r="4"/><circle cx="240" cy="125" r="4"/><circle cx="360" cy="108" r="4"/><circle cx="480" cy="83" r="4"/><circle cx="600" cy="48" r="4"/></g>
+                </svg>
+                <div class="chart-x-labels"><span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span></div>
+              </div>
+            </div>
+            <p class="chart-note">Dados demonstrativos. O gráfico será alimentado pelos registros do sistema após a integração com o Backend.</p>
+          </article>
+
+          <article class="panel alerts-panel">
+            <div class="panel-heading"><div><h2>Alertas e lembretes</h2><p>Itens que precisam de atenção</p></div><span class="alert-count">3</span></div>
+            <div class="alert-item"><span class="alert-symbol amber">!</span><div><strong>Vacinação próxima</strong><p>Animal #025 · Reforço previsto para 25/06</p></div></div>
+            <div class="alert-item"><span class="alert-symbol red">!</span><div><strong>Vacinação pendente</strong><p>Animal #041 · Verificar registro de aplicação</p></div></div>
+            <div class="alert-item"><span class="alert-symbol blue">i</span><div><strong>Pesagem programada</strong><p>Lote 03 · Acompanhamento nesta semana</p></div></div>
+            <a class="panel-link" href="saude.html">Ver todos os alertas <span>→</span></a>
+          </article>
+        </section>
+
+        <section class="panel table-panel">
+          <div class="panel-heading">
+            <div><h2>Animais cadastrados recentemente</h2><p>Últimos registros adicionados ao rebanho</p></div>
+            <a class="panel-link" href="animais.html">Ver rebanho completo <span>→</span></a>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Identificação</th><th>Nome</th><th>Raça</th><th>Sexo</th><th>Peso</th><th>Situação</th></tr></thead>
+              <tbody id="recentAnimals">
+                <tr><td><strong>#025</strong></td><td>Mimosa</td><td>Holandesa</td><td>Fêmea</td><td>480 kg</td><td><span class="status active">Ativo</span></td></tr>
+                <tr><td><strong>#026</strong></td><td>Estrela</td><td>Jersey</td><td>Fêmea</td><td>390 kg</td><td><span class="status active">Ativo</span></td></tr>
+                <tr><td><strong>#027</strong></td><td>Trovão</td><td>Nelore</td><td>Macho</td><td>520 kg</td><td><span class="status active">Ativo</span></td></tr>
+                <tr><td><strong>#028</strong></td><td>Flor</td><td>Angus</td><td>Fêmea</td><td>410 kg</td><td><span class="status pending">Em acompanhamento</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note">Os registros apresentados são fictícios e servem apenas para demonstrar a interface.</p>
+        </section>
+        <footer class="footer">© <span id="currentYear"></span> AgroBoi · Sistema de Gestão de Rebanhos Bovinos</footer>
+      </section>
+    </main>
+  </div>
 </body>
 </html>
