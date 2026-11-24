@@ -18,6 +18,11 @@ public class AnimalService {
     }
     public List<Animal> listarTodos() { return repository.findAll(); }
     public Optional<Animal> buscarPorId(Long id) { return repository.findById(Regras.obrigatorio(id, "ID")); }
+    /** RF15: texto livre em identificação, nome ou raça; texto vazio devolve todos. */
+    public List<Animal> pesquisar(String busca) {
+        String termo = busca == null ? "" : busca.replace("%", "").replace("_", "").trim();
+        return termo.isEmpty() ? repository.findAll() : repository.pesquisar(termo);
+    }
     @Transactional
     public Animal salvar(Animal registro) {
         Regras.obrigatorio(registro, "Animal");

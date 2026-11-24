@@ -19,6 +19,10 @@ public class ItemVendaService {
         return repository.findAll();
     }
 
+    public List<Itemvenda> listarPorVenda(Long vendaId) {
+        return repository.findByVendaId(vendaId);
+    }
+
     public Optional<Itemvenda> buscarPorId(Long id) {
         return repository.findById(id);
     }
