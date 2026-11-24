@@ -1,4 +1,4 @@
-﻿package AgroBoi.service;
+package AgroBoi.service;
 
 import AgroBoi.domain.entity.Itemvenda;
 import AgroBoi.repository.ItemVendaRepository;
@@ -24,11 +24,11 @@ public class ItemVendaService {
     }
 
     public Itemvenda salvar(Itemvenda registro) {
-        return repository.save(registro);
+        throw new RegraNegocioException("Itens devem ser cadastrados junto da venda.");
     }
 
     public void excluir(Long id) {
-        repository.deleteById(id);
+        throw new RegraNegocioException("Itens de vendas confirmadas devem ser preservados.");
     }
 }
 
