@@ -1,0 +1,34 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const contract = require('../js/animal-contract');
+const input = {identificacao:' 025 ',nome:' Mimosa ',sexo:'FEMEA',situacao:'NA_FAZENDA',racaId:'2',maeId:'',paiId:'3'};
+const result = contract.request(input);
+assert.equal(result.identificacao, '025');
+assert.equal(result.racaId, 2);
+assert.equal(result.maeId, null);
+assert.equal(result.paiId, 3);
+assert.equal(result.dataNascimento, null);
+assert.throws(() => contract.request({...input,situacao:'Ativo'}));
+assert.throws(() => contract.request({...input,racaId:'Holandesa'}));
+assert.throws(() => contract.request({...input,paiId:'1.5'}));
+const dto = fs.readFileSync('src/backend/AgroBoi/src/main/java/AgroBoi/domain/dto/request/AnimalRequest.java','utf8');
+const fields = [...dto.matchAll(/(?:String|Long|LocalDate|Sexo|StatusAnimal)\s+(\w+)/g)].map(m=>m[1]);
+assert.deepEqual(Object.keys(result).sort(),fields.sort());
+function pageContext(page) {
+ const html = fs.readFileSync(`src/frontend/html/${page}.html`,'utf8');
+ const elements = Object.fromEntries([...html.matchAll(/id="([^"]+)"/g)].map(m=>[m[1], {value:'',dataset:{},handlers:{},classList:{add(){},remove(){},toggle(){return false}},addEventListener(event,fn){this.handlers[event]=fn},setAttribute(){},focus(){},reset(){},scrollIntoView(){}}]));
+ return {elements, context:vm.createContext({document:{getElementById:id=>elements[id] || null},localStorage:{getItem:()=>null,setItem(){}},Intl,Date,console})};
+}
+const login=pageContext('login');
+vm.runInContext(fs.readFileSync('src/frontend/js/login.js','utf8'),login.context);
+let prevented=false;
+login.elements.loginForm.handlers.submit({preventDefault(){prevented=true}});
+assert(prevented);
+assert(login.elements.emailError.textContent);
+const animals=pageContext('animais');
+vm.runInContext(fs.readFileSync('src/frontend/js/animal-contract.js','utf8'),animals.context);
+vm.runInContext(fs.readFileSync('src/frontend/js/animais.js','utf8'),animals.context);
+animals.elements.newAnimalButton.handlers.click();
+assert.equal(animals.elements.situacao.value,'NA_FAZENDA');
+console.log('OK: contrato AnimalRequest, validacoes, inicializacao das paginas e submit do login.');

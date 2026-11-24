@@ -1,10 +1,5 @@
-const STORAGE_KEY = "agroboi_animais";
-const initialAnimals = [
-  {id:"1",identification:"025",name:"Mimosa",breed:"Holandesa",sex:"Fêmea",birthDate:"2022-03-14",weight:"480",origin:"Nascida na propriedade",status:"Ativo"},
-  {id:"2",identification:"026",name:"Estrela",breed:"Jersey",sex:"Fêmea",birthDate:"2021-11-02",weight:"390",origin:"Compra",status:"Ativo"},
-  {id:"3",identification:"027",name:"Trovão",breed:"Nelore",sex:"Macho",birthDate:"2023-01-20",weight:"520",origin:"Nascido na propriedade",status:"Ativo"},
-  {id:"4",identification:"028",name:"Flor",breed:"Angus",sex:"Fêmea",birthDate:"2022-08-09",weight:"410",origin:"Compra",status:"Em acompanhamento"}
-];
+const STORAGE_KEY = "agroboi_animais_v2";
+const initialAnimals = [];
 let animals = loadAnimals();
 
 const formPanel = document.getElementById("animalFormPanel");
@@ -20,7 +15,8 @@ document.getElementById("todayDate").textContent = new Intl.DateTimeFormat("pt-B
 function loadAnimals(){
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : initialAnimals;
+    const parsed = saved ? JSON.parse(saved) : initialAnimals;
+    return Array.isArray(parsed) ? parsed : initialAnimals;
   } catch {
     return initialAnimals;
   }
@@ -35,32 +31,30 @@ function formatDate(value){
   return `${day}/${month}/${year}`;
 }
 function statusClass(status){
-  if(status === "Ativo") return "active";
-  if(status === "Em acompanhamento") return "monitor";
-  if(status === "Vendido") return "sold";
+  if(status === "NA_FAZENDA") return "active";
+  if(status === "VENDIDO") return "sold";
   return "inactive";
 }
 function updateSummary(){
   document.getElementById("totalAnimals").textContent = animals.length;
-  document.getElementById("activeAnimals").textContent = animals.filter(a=>a.status==="Ativo").length;
-  document.getElementById("monitorAnimals").textContent = animals.filter(a=>a.status==="Em acompanhamento").length;
+  document.getElementById("activeAnimals").textContent = animals.filter(a=>a.situacao==="NA_FAZENDA").length;
+  document.getElementById("monitorAnimals").textContent = animals.filter(a=>a.situacao==="VENDIDO").length;
 }
 function renderAnimals(){
   const term = searchInput.value.trim().toLocaleLowerCase("pt-BR");
   const selectedStatus = statusFilter.value;
   const filtered = animals.filter(animal => {
-    const matchesText = [animal.identification,animal.name,animal.breed].join(" ").toLocaleLowerCase("pt-BR").includes(term);
-    return matchesText && (!selectedStatus || animal.status === selectedStatus);
+    const matchesText = [animal.identificacao,animal.nome,animal.racaId].join(" ").toLocaleLowerCase("pt-BR").includes(term);
+    return matchesText && (!selectedStatus || animal.situacao === selectedStatus);
   });
   tableBody.innerHTML = filtered.map(animal => `
     <tr>
-      <td><strong>#${escapeHTML(animal.identification)}</strong></td>
-      <td>${escapeHTML(animal.name || "—")}</td>
-      <td>${escapeHTML(animal.breed)}</td>
-      <td>${escapeHTML(animal.sex)}</td>
-      <td>${formatDate(animal.birthDate)}</td>
-      <td>${animal.weight ? `${escapeHTML(animal.weight)} kg` : "—"}</td>
-      <td><span class="status ${statusClass(animal.status)}">${escapeHTML(animal.status)}</span></td>
+      <td><strong>#${escapeHTML(animal.identificacao)}</strong></td>
+      <td>${escapeHTML(animal.nome || "—")}</td>
+      <td>${escapeHTML(animal.racaId ?? "—")}</td>
+      <td>${escapeHTML(AnimalContract.labels[animal.sexo])}</td>
+      <td>${formatDate(animal.dataNascimento)}</td>
+      <td><span class="status ${statusClass(animal.situacao)}">${escapeHTML(AnimalContract.labels[animal.situacao])}</span></td>
       <td><div class="action-group"><button class="action-button" data-action="edit" data-id="${escapeHTML(animal.id)}">Editar</button><button class="action-button delete" data-action="delete" data-id="${escapeHTML(animal.id)}">Excluir</button></div></td>
     </tr>`).join("");
   document.getElementById("emptyState").hidden = filtered.length !== 0;
@@ -72,16 +66,16 @@ function openForm(animal=null){
   document.getElementById("formTitle").textContent = animal ? "Editar bovino" : "Cadastrar novo bovino";
   document.getElementById("saveButton").textContent = animal ? "Salvar alterações" : "Salvar animal";
   if(animal){
-    for(const key of ["identification","name","breed","sex","birthDate","weight","origin","status"]){
+    for(const key of ["identificacao","nome","racaId","sexo","dataNascimento","observacoes","situacao","maeId","paiId"]){
       document.getElementById(key).value = animal[key] || "";
     }
   } else {
-    document.getElementById("status").value = "Ativo";
+    document.getElementById("situacao").value = "NA_FAZENDA";
   }
   feedback.textContent = "";
   formPanel.classList.add("open");
   formPanel.scrollIntoView({behavior:"smooth",block:"start"});
-  document.getElementById("identification").focus({preventScroll:true});
+  document.getElementById("identificacao").focus({preventScroll:true});
 }
 function closeForm(){formPanel.classList.remove("open");form.reset();feedback.textContent="";}
 document.getElementById("newAnimalButton").addEventListener("click",()=>openForm());
@@ -93,24 +87,20 @@ statusFilter.addEventListener("change",renderAnimals);
 form.addEventListener("submit",event=>{
   event.preventDefault();
   feedback.textContent = "";
-  const data = Object.fromEntries(new FormData(form).entries());
-  data.identification = data.identification.trim();
-  data.name = data.name.trim();
-  if(!data.identification || !data.breed || !data.sex || !data.status){
-    feedback.textContent = "Preencha os campos obrigatórios.";
-    return;
-  }
-  const editingId = document.getElementById("animalId").value;
-  const duplicate = animals.some(a=>a.identification.toLowerCase()===data.identification.toLowerCase() && a.id!==editingId);
+  let data;
+  try { data = AnimalContract.request(Object.fromEntries(new FormData(form).entries())); }
+  catch (error) { feedback.textContent = error.message; return; }
+  const editingId = Number(document.getElementById("animalId").value) || null;
+  const duplicate = animals.some(a=>a.identificacao.toLowerCase()===data.identificacao.toLowerCase() && a.id!==editingId);
   if(duplicate){
     feedback.textContent = "Já existe um animal com esse número de identificação.";
-    document.getElementById("identification").focus();
+    document.getElementById("identificacao").focus();
     return;
   }
   if(editingId){
     animals = animals.map(a=>a.id===editingId ? {...a,...data,id:editingId} : a);
   } else {
-    animals.unshift({...data,id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now())});
+    animals.unshift({...data,id:Math.max(0, ...animals.map(a => a.id)) + 1});
   }
   saveAnimals();
   renderAnimals();
@@ -120,11 +110,11 @@ form.addEventListener("submit",event=>{
 tableBody.addEventListener("click",event=>{
   const button = event.target.closest("button[data-action]");
   if(!button) return;
-  const animal = animals.find(a=>a.id===button.dataset.id);
+  const animal = animals.find(a=>a.id===Number(button.dataset.id));
   if(!animal) return;
   if(button.dataset.action==="edit") openForm(animal);
   if(button.dataset.action==="delete"){
-    if(!confirm(`Deseja realmente excluir o animal #${animal.identification}?`)) return;
+    if(!confirm(`Deseja realmente excluir o animal #${animal.identificacao}?`)) return;
     animals = animals.filter(a=>a.id!==animal.id);
     saveAnimals();
     renderAnimals();
@@ -140,3 +130,5 @@ menuToggle.addEventListener("click",()=>{
 });
 
 renderAnimals();
+
+if (localStorage.getItem("agroboi_animais")) document.getElementById("legacyNotice").textContent = "Existem registros da versão anterior preservados no navegador. Revise-os antes de recadastrar com os campos atuais.";

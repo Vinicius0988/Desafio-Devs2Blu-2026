@@ -1,4 +1,3 @@
-document.getElementById('login-form').addEventListener('submit', event => event.preventDefault());
 const loginForm = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
