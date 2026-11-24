@@ -42,3 +42,7 @@ Alimentação sem `animal_id` refere-se ao rebanho inteiro. Despesa sem `animal_
 ## Validação
 
 Estrutura, campos e referências conferidos localmente. A execução ainda não foi testada em servidor MariaDB, indisponível neste ambiente.
+
+## Regras implementadas no backend
+
+Consulte [Regras de negócio dos services](REGRAS_NEGOCIO.md) para validações, transações, decisões de histórico e execução dos testes.
