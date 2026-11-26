@@ -1,6 +1,6 @@
 # AgroBoi — Explicação das tabelas e campos
 
-Este documento explica a estrutura do arquivo [agroboi_mariadb.sql](agroboi_mariadb.sql). O sistema atende uma única fazenda, gerenciada pelo próprio fazendeiro.
+Este documento explica a estrutura do arquivo [agroboi_mariadb.sql](agroboi_mariadb.sql). O escopo é uma única fazenda gerenciada pelo próprio fazendeiro. A implementação atual admite várias contas; a restrição de acesso ao fazendeiro ainda está pendente. O documento descreve o SQL manual, que pode diferir do esquema gerado pelo Hibernate.
 
 ## 1. fazenda
 
@@ -27,11 +27,11 @@ Guarda as contas que acessam o sistema. O usuário principal é o próprio fazen
 | `nome` | Nome do usuário. |
 | `email` | Email utilizado no login; não pode se repetir. |
 | `senha_hash` | Hash da senha, sem armazenar a senha original. |
-| `perfil` | Nível de acesso, como ADMINISTRADOR ou USUARIO_COMUM; o padrão é ADMINISTRADOR. |
+| `perfil` | Nível de acesso, como ADMINISTRADOR ou USUARIO_COMUM; o padrão no SQL é ADMINISTRADOR; o cadastro via API define USUARIO_COMUM. |
 | `ativo` | Indica se a conta está habilitada; começa como verdadeira. |
 | `criado_em` | Data e horário em que a conta foi cadastrada. |
 
-O perfil de usuário comum foi previsto para atender aos critérios acadêmicos do projeto.
+O administrador inicial é criado pelo backend a partir de variáveis de ambiente. Atualmente, contas comuns também acessam as operações da fazenda; apenas a gestão de usuários exige administrador. Nenhuma tabela vincula cada animal a um usuário: os dados pertencem à única fazenda.
 
 ## 3. raca
 
@@ -182,6 +182,6 @@ Guarda o histórico de entradas e saídas do rebanho. Cada registro representa a
 
 ## Observação sobre as validações
 
-Os tipos, situações e categorias descritos aqui são os valores previstos para a aplicação. Na versão simplificada, o SQL guarda esses campos como texto; o backend deve validar os valores permitidos, datas, quantidades e regras de negócio.
+Os tipos, situações e categorias descritos aqui são os valores previstos para a aplicação. Na versão simplificada, o SQL guarda esses campos como texto; o backend valida os valores permitidos, datas, quantidades e regras de negócio.
 
-Por exemplo, ao vender um animal, o backend deve registrar a venda, o item e a saída, além de atualizar a situação do animal, tudo na mesma transação.
+Por exemplo, ao vender um animal, `VendaService` registra a venda, os itens e as saídas, além de atualizar a situação dos animais, tudo na mesma transação. Consulte as [regras implementadas](REGRAS_NEGOCIO.md).
