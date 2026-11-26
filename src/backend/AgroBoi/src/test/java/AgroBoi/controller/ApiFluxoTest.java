@@ -30,6 +30,7 @@ class ApiFluxoTest {
     @Autowired AnimalRepository animais;
     @Autowired RacaRepository racas;
     @Autowired UsuarioRepository usuarios;
+    @Autowired org.springframework.security.crypto.password.PasswordEncoder encoder;
     MockMvc mvc;
 
     @BeforeEach
@@ -66,13 +67,13 @@ class ApiFluxoTest {
 
     @Test
     void usuarioComumNaoAcessaGestaoDeUsuarios() throws Exception {
-        String token = cadastrarELogar("comum@agroboi.com");
+        String token = criarELogar("comum@agroboi.com", "USUARIO_COMUM");
         mvc.perform(get("/api/usuarios").header("Authorization", "Bearer " + token)).andExpect(status().isForbidden());
     }
 
     @Test
     void fluxoCompleto() throws Exception {
-        String token = cadastrarELogar("produtor@agroboi.com");
+        String token = criarELogar("produtor@agroboi.com", "ADMINISTRADOR");
         String auth = "Bearer " + token;
 
         // raça
@@ -143,13 +144,66 @@ class ApiFluxoTest {
         mvc.perform(get("/api/relatorios/reproducao").header("Authorization", auth)).andExpect(status().isOk());
     }
 
-    private String cadastrarELogar(String email) throws Exception {
+
+    @Test
+    void cadastroPublicoBloqueadoSemCriarConta() throws Exception {
+        long antes = usuarios.count();
         mvc.perform(post("/api/auth/cadastro").contentType(MediaType.APPLICATION_JSON)
-                .content(json("{\"nome\":\"Teste\",\"email\":\"" + email + "\",\"senha\":\"senha123\"}")))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.perfil").value("USUARIO_COMUM"))
-                .andExpect(jsonPath("$.senha").doesNotExist())
+                .content("{\"nome\":\"Intruso\",\"email\":\"intruso@teste.com\",\"senha\":\"senha123\"}"))
+                .andExpect(status().isUnauthorized());
+        org.junit.jupiter.api.Assertions.assertEquals(antes, usuarios.count());
+    }
+
+    @Test
+    void cadastroTambemBloqueadoParaAdministrador() throws Exception {
+        String token = criarELogar("admin@teste.com", "ADMINISTRADOR");
+        long antes = usuarios.count();
+        mvc.perform(post("/api/auth/cadastro").header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isForbidden());
+        org.junit.jupiter.api.Assertions.assertEquals(antes, usuarios.count());
+    }
+
+    @Test
+    void contaComumNaoConsultaNemAlteraDadosDaFazenda() throws Exception {
+        String auth = "Bearer " + criarELogar("comum@teste.com", "USUARIO_COMUM");
+        for (String recurso : new String[]{"fazenda", "racas", "animais", "pesagens", "registros-sanitarios",
+                "alimentacoes", "reproducoes", "despesas", "vendas", "itens-venda", "movimentacoes",
+                "dashboard", "relatorios/rebanho", "relatorios/financeiro", "usuarios"}) {
+            mvc.perform(get("/api/" + recurso).header("Authorization", auth)).andExpect(status().isForbidden());
+            mvc.perform(post("/api/" + recurso).header("Authorization", auth)
+                    .contentType(MediaType.APPLICATION_JSON).content("{}")) .andExpect(status().isForbidden());
+            mvc.perform(put("/api/" + recurso + "/1").header("Authorization", auth)
+                    .contentType(MediaType.APPLICATION_JSON).content("{}")) .andExpect(status().isForbidden());
+            mvc.perform(delete("/api/" + recurso + "/1").header("Authorization", auth)).andExpect(status().isForbidden());
+        }
+        mvc.perform(get("/api/auth/me").header("Authorization", auth)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.senhaHash").doesNotExist());
+    }
+
+    @Test
+    void tokenDeAdministradorDesativadoDeixaDeFuncionar() throws Exception {
+        String token = criarELogar("inativo@teste.com", "ADMINISTRADOR");
+        var usuario = usuarios.findByEmailIgnoreCase("inativo@teste.com").orElseThrow();
+        usuario.setAtivo(false); usuarios.saveAndFlush(usuario);
+        mvc.perform(get("/api/animais").header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void permissaoEhReavaliadaMesmoComTokenAnterior() throws Exception {
+        String token = criarELogar("alterado@teste.com", "ADMINISTRADOR");
+        var usuario = usuarios.findByEmailIgnoreCase("alterado@teste.com").orElseThrow();
+        usuario.setPerfil("USUARIO_COMUM"); usuarios.saveAndFlush(usuario);
+        mvc.perform(get("/api/animais").header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    private String criarELogar(String email, String perfil) throws Exception {
+        var usuario = new AgroBoi.domain.entity.Usuario();
+        usuario.setNome("Teste"); usuario.setEmail(email);
+        usuario.setSenhaHash(encoder.encode("senha123")); usuario.setPerfil(perfil);
+        usuarios.saveAndFlush(usuario);
         String resposta = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content(json("{\"email\":\"" + email + "\",\"senha\":\"senha123\"}")))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();

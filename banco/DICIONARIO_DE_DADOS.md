@@ -1,6 +1,6 @@
 # AgroBoi — Explicação das tabelas e campos
 
-Este documento explica a estrutura do arquivo [agroboi_mariadb.sql](agroboi_mariadb.sql). O escopo é uma única fazenda gerenciada pelo próprio fazendeiro. A implementação atual admite várias contas; a restrição de acesso ao fazendeiro ainda está pendente. O documento descreve o SQL manual, que pode diferir do esquema gerado pelo Hibernate.
+Este documento explica a estrutura do arquivo [agroboi_mariadb.sql](agroboi_mariadb.sql). O escopo é uma única fazenda gerenciada pelo próprio fazendeiro. O banco admite várias contas, mas as operações da fazenda exigem perfil ADMINISTRADOR e não há cadastro público. O documento descreve o SQL manual, que pode diferir do esquema gerado pelo Hibernate.
 
 ## 1. fazenda
 
@@ -27,11 +27,11 @@ Guarda as contas que acessam o sistema. O usuário principal é o próprio fazen
 | `nome` | Nome do usuário. |
 | `email` | Email utilizado no login; não pode se repetir. |
 | `senha_hash` | Hash da senha, sem armazenar a senha original. |
-| `perfil` | Nível de acesso, como ADMINISTRADOR ou USUARIO_COMUM; o padrão no SQL é ADMINISTRADOR; o cadastro via API define USUARIO_COMUM. |
+| `perfil` | Nível de acesso, como ADMINISTRADOR ou USUARIO_COMUM; o padrão no SQL é ADMINISTRADOR; o serviço interno de criação define USUARIO_COMUM; não há cadastro pela API. |
 | `ativo` | Indica se a conta está habilitada; começa como verdadeira. |
 | `criado_em` | Data e horário em que a conta foi cadastrada. |
 
-O administrador inicial é criado pelo backend a partir de variáveis de ambiente. Atualmente, contas comuns também acessam as operações da fazenda; apenas a gestão de usuários exige administrador. Nenhuma tabela vincula cada animal a um usuário: os dados pertencem à única fazenda.
+O administrador inicial é criado pelo backend a partir de variáveis de ambiente. Contas comuns podem autenticar e consultar a própria conta, mas não acessam as operações da fazenda. Nenhuma tabela vincula cada animal a um usuário: os dados pertencem à única fazenda.
 
 ## 3. raca
 

@@ -5,7 +5,7 @@
 - IDs e datas de criação são retornados, não recebidos para cadastro. Em atualizações, o ID vem pela rota.
 - Relacionamentos usam IDs, incluindo raça, mãe e pai. Os services consultam e validam as referências.
 - `VendaRequest` recebe uma lista de `ItemVendaRequest` com `animalId` e `valor`. O serviço grava venda, itens, saídas e situação dos animais na mesma transação. `VendaResponse` inclui os itens.
-- `UsuarioRequest` recebe nome, email e senha. `UsuarioService` gera o hash BCrypt e atribui `USUARIO_COMUM` ao cadastro. Na atualização, senha nula preserva a atual. `UsuarioResponse` não retorna senha nem hash.
+- `UsuarioRequest` recebe nome, email e senha. `UsuarioService` gera o hash BCrypt e atribui `USUARIO_COMUM` à criação interna, que não possui endpoint. A API usa esse DTO na atualização de contas pelo administrador. Na atualização, senha nula preserva a atual. `UsuarioResponse` não retorna senha nem hash.
 - `LoginRequest` recebe email e senha; `LoginResponse` devolve token, tipo, validade em segundos e dados do usuário. O `toString` de `LoginRequest` e `UsuarioRequest` omite credenciais.
 - `ErroResposta` representa os erros tratados pela aplicação; respostas do filtro de segurança podem não usar esse formato.
 - `DashboardResponse` e os records agrupados em `Relatorios` representam os indicadores e relatórios calculados pelos services.
