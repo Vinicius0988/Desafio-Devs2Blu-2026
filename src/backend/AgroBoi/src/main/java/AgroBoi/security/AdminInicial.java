@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Cria o primeiro administrador quando ADMIN_EMAIL e ADMIN_PASSWORD estão definidos
- * e o e-mail ainda não existe. Sem isso, o cadastro público só gera USUARIO_COMUM
- * e ninguém conseguiria gerenciar usuários.
+ * e o e-mail ainda não existe. Não há cadastro público pela API.
+ * Contas existentes não são promovidas nem têm sua senha substituída.
  */
 @Component
 public class AdminInicial implements CommandLineRunner {

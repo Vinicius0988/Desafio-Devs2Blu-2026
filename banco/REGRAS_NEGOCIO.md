@@ -35,11 +35,11 @@ A aplicação gerencia uma única fazenda. Os services validam os dados antes de
 - O cadastro comum não altera sexo ou nascimento de animais existentes. Corrigir esses dados exige revalidar descendentes e histórico, em um fluxo específico futuro.
 - A situação do animal muda por venda ou movimentação. A exclusão de animais, vendas, itens e movimentações confirmadas fica bloqueada para preservar o histórico. Estorno e correção histórica ainda não estão implementados.
 - Reprodução não cria automaticamente o bezerro nem presume uma duração fixa de gestação.
-- Usuários novos recebem USUARIO_COMUM. O login JWT e o provisionamento do administrador por variáveis de ambiente estão implementados. O cadastro é público e apenas a gestão de usuários exige administrador; restringir as demais operações ao fazendeiro ainda é uma pendência.
+- O cadastro pela API está desabilitado. `UsuarioService.salvar` mantém o padrão USUARIO_COMUM para uso interno, sem endpoint de criação. O fazendeiro administrador é provisionado por variáveis de ambiente. Todas as operações da fazenda exigem ADMINISTRADOR; contas comuns existentes só podem autenticar e consultar a própria conta.
 
 ## Uso pela API REST
 
-`VendaService.salvar(VendaRequest)` recebe a negociação e todos os itens juntos. `UsuarioService.salvar(UsuarioRequest)` cria o usuário e `atualizar(id, UsuarioRequest)` altera seu cadastro. Os demais métodos de gravação recebem as entidades com referências por ID, que são consultadas e validadas novamente.
+`VendaService.salvar(VendaRequest)` recebe a negociação e todos os itens juntos. `UsuarioService.salvar(UsuarioRequest)` cria o usuário internamente (não exposto pela API) e `atualizar(id, UsuarioRequest)` altera seu cadastro. Os demais métodos de gravação recebem as entidades com referências por ID, que são consultadas e validadas novamente.
 
 Os controllers usam `Mapeador` para converter DTOs de entrada em novos objetos e devolver DTOs de resposta. O hash da senha não é exposto. `GlobalExceptionHandler` converte as exceções previstas em respostas HTTP; a integração com o frontend permanece pendente.
 
@@ -47,7 +47,7 @@ Consulte o [README principal](../README.md) para endpoints, autenticação, conf
 
 ## Autenticação, dashboard e relatórios
 
-- `AuthService` verifica email, senha BCrypt e conta ativa. O filtro JWT também consulta a conta, bloqueando usuários desativados.
+- `AuthService` verifica email, senha BCrypt e conta ativa. O filtro JWT também consulta a conta e suas permissões atuais, bloqueando usuários desativados e impedindo que tokens antigos mantenham acesso administrativo após mudança de perfil.
 - `AdminInicial` cria a conta administrativa quando as variáveis estão definidas e o email ainda não existe. Não transforma uma conta comum existente em administrador.
 - `DashboardService` calcula totais por situação e sexo, previsões sanitárias, pesagens, nascimentos, receitas e despesas do mês, além das dez últimas movimentações.
 - `RelatorioService` fornece rebanho, vacinação, evolução de peso, reprodução e financeiro. Datas finais anteriores às iniciais são rejeitadas. O financeiro soma os valores dos itens vendidos e subtrai despesas; não representa controle de parcelas ou recebimentos.

@@ -52,15 +52,19 @@ Para visualizar o frontend, abra `src/frontend/index.html` no navegador. As pág
 
 ## API REST
 
-Todos os endpoints abaixo têm o prefixo `/api` e usam JSON. Login e cadastro são públicos; os demais exigem `Authorization: Bearer <token>`. Swagger/OpenAPI também são públicos.
+Todos os endpoints abaixo têm o prefixo `/api` e usam JSON. Somente o login é público entre os endpoints da API; os demais exigem `Authorization: Bearer <token>`. Swagger/OpenAPI também são públicos.
 
-O cadastro gera `USUARIO_COMUM`. Somente `/api/usuarios/**` exige `ADMINISTRADOR`; atualmente qualquer conta autenticada pode operar os dados da única fazenda. Restringir esse acesso ao fazendeiro continua pendente.
+As operações da fazenda exigem `ADMINISTRADOR`, perfil do fazendeiro. `GET /api/auth/me` permite que qualquer conta autenticada consulte apenas seus próprios dados. Contas comuns existentes não acessam os dados da fazenda.
+
+O cadastro pela API foi removido e `/api/auth/cadastro` permanece bloqueado, inclusive para administradores: sem autenticação retorna 401; com autenticação, 403. O primeiro acesso do fazendeiro depende de `ADMIN_EMAIL` e `ADMIN_PASSWORD` na inicialização. Caso o email já pertença a uma conta comum, ela não será promovida automaticamente; use um email administrativo ainda não cadastrado ou regularize o perfil por administração controlada do banco.
+
+Contas não são apagadas nem promovidas nesta alteração. O perfil é verificado no banco a cada requisição: retirar o perfil administrativo bloqueia o acesso à fazenda mesmo com token anterior; desativar a conta invalida seu acesso autenticado.
 
 Na tabela, CRUD significa listar, buscar por ID, criar, atualizar e excluir. Filtros de consulta se aplicam à listagem; atualização e exclusão usam `/{id}`. As exceções estão indicadas abaixo.
 
 | Recurso | Endpoints | Requisitos |
 |---|---|---|
-| Auth | `POST /auth/cadastro`, `POST /auth/login`, `GET /auth/me` | RF01, RF02 |
+| Auth | `POST /auth/login`, `GET /auth/me` | RF02 |
 | Usuários (só ADMINISTRADOR) | `GET /usuarios`, `GET/PUT/DELETE /usuarios/{id}` (DELETE desativa) | |
 | Fazenda | `GET /fazenda`, `PUT /fazenda` (fazenda única, ID 1) | |
 | Raças | CRUD `/racas` | |
@@ -92,7 +96,6 @@ Frontend: animais, saúde e alimentação usam dados locais (`localStorage`); ou
 
 Pendências conhecidas:
 
-- Restringir cadastro e acesso aos dados ao escopo do fazendeiro.
 - Retirar a senha fixa da configuração e definir as configurações do ambiente de execução, incluindo JWT e CORS.
 - Validar o esquema, os fluxos e a concorrência no MySQL/MariaDB real.
 - Integrar as telas e testar o fluxo completo pelo navegador.
@@ -109,7 +112,7 @@ Na pasta `src/backend/AgroBoi`:
 
 Os testes Spring usam o perfil `test`, H2 em memória no modo MariaDB e criação automática do esquema. Não exigem um banco externo nem `DB_PASSWORD`. Execute em um ambiente de testes, sem sobrescrever a conexão H2 nem fornecer credenciais `ADMIN_EMAIL`/`ADMIN_PASSWORD` de uso real, pois os testes limpam registros.
 
-A última execução verificada da versão `9515991` passou nos 46 testes: 33 de regras, 8 de integração de vendas, 4 de fluxo REST e 1 de inicialização do Spring. Inclui login, acesso protegido, cadastro de animal, pesagem, venda, relatórios e rollback. Isso não substitui testes no banco real ou a integração do navegador.
+A suíte cobre regras de negócio, integração de vendas, fluxo REST, controle de acesso e inicialização do Spring. Inclui login, acesso protegido, cadastro de animal, pesagem, venda, relatórios e rollback. Isso não substitui testes no banco real ou a integração do navegador.
 
 Para os testes de contrato do frontend, com Node.js instalado, a partir da raiz:
 

@@ -20,8 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
- * API stateless com JWT. Públicos: login, cadastro e documentação.
- * /api/usuarios/** só para ADMINISTRADOR; o restante exige estar autenticado.
+ * API stateless com JWT. Públicos: login e documentação.
+ * Operações da fazenda exigem ADMINISTRADOR. Cadastro pela API desabilitado.
  */
 @Configuration
 @EnableWebSecurity
@@ -38,10 +38,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/cadastro").permitAll()
+                        .requestMatchers("/api/auth/cadastro", "/api/auth/cadastro/**").denyAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/usuarios/**").hasRole("ADMINISTRADOR")
-                        .anyRequest().authenticated())
+                        .requestMatchers("/api/**").hasRole("ADMINISTRADOR")
+                        .anyRequest().denyAll())
                 .addFilterBefore(new JwtAuthFilter(jwtService, detalhes), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
