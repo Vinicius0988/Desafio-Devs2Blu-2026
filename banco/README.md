@@ -51,7 +51,9 @@ Alimentação sem `animal_id` refere-se ao rebanho inteiro. Despesa sem `animal_
 
 ## Validação
 
-Estrutura, campos e referências foram conferidos com o SQL e o código. A suíte automatizada usa H2 em modo MariaDB, incluindo testes REST e rollback; ela não executa este script. A execução do SQL e a compatibilidade com servidor MariaDB real ainda precisam ser verificadas. Não há validação de banco real nesta revisão documental.
+Em 26/11/2026, consultas de leitura confirmaram o banco `agroboi` no MariaDB 10.4.32 do XAMPP, com as 12 tabelas e nomes de colunas correspondentes ao script. Na consulta, todas estavam vazias; foram identificadas 12 chaves primárias, 13 chaves estrangeiras, 5 restrições de unicidade e 1 CHECK. O script declara MariaDB 10.6 ou superior como alvo; a verificação local em 10.4.32 não estabelece compatibilidade completa entre versões.
+
+O usuário confirmou a inicialização da aplicação após corrigir as variáveis no IntelliJ. Veja o [guia e os erros encontrados](../docs/EXECUCAO_INTELLIJ.md). Os fluxos de gravação, rollback e concorrência no servidor real ainda precisam ser testados. A suíte automatizada continua usando H2 e não executa este script.
 
 ## Regras implementadas no backend
 

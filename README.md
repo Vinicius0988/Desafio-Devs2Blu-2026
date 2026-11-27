@@ -32,9 +32,9 @@ A combinação padrão é `mariadb,dev`. Use `mysql,dev` para desenvolvimento co
 | `DDL_AUTO` | Em `dev`, padrão `update`; em `prod`, não é utilizado, pois o esquema é apenas validado |
 | `PORT` | Porta HTTP; padrão `8080` |
 
-O banco `agroboi` deve existir. Desenvolvimento pode criar/ajustar tabelas; produção exige esquema previamente preparado. A troca de perfil não migra dados entre MySQL e MariaDB. A compatibilidade do SQL manual com o banco real permanece pendente de validação.
+O banco `agroboi` deve existir. Desenvolvimento pode criar/ajustar tabelas; produção exige esquema previamente preparado. A troca de perfil não migra dados entre MySQL e MariaDB. O banco local existente e seus nomes de tabelas/colunas foram conferidos; os fluxos de gravação e a compatibilidade completa ainda precisam ser validados.
 
-**Antes de executar pelo IntelliJ**, configure o JDK, Maven Wrapper e as variáveis da aplicação em **Run > Edit Configurations > Environment variables**. Siga o [guia completo do IntelliJ](docs/EXECUCAO_INTELLIJ.md), que inclui primeiro acesso, geração do segredo JWT, configuração do banco e diagnóstico de erros.
+**Antes de executar pelo IntelliJ**, configure o JDK, Maven Wrapper e as variáveis da aplicação em **Run > Edit Configurations > Environment variables**. Siga o [guia completo do IntelliJ](docs/EXECUCAO_INTELLIJ.md), que inclui exemplo para copiar, configuração de senha vazia, primeiro acesso e correções dos erros de variáveis em Program arguments e de porta concatenada. Em 26/11/2026, o usuário confirmou que a aplicação iniciou após essas correções.
 
 No terminal, após configurar as mesmas variáveis no ambiente, execute em `src/backend/AgroBoi`:
 
