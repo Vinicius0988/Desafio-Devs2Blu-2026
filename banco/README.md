@@ -53,7 +53,7 @@ Alimentação sem `animal_id` refere-se ao rebanho inteiro. Despesa sem `animal_
 
 Em 26/11/2026, consultas de leitura confirmaram o banco `agroboi` no MariaDB 10.4.32 do XAMPP, com as 12 tabelas e nomes de colunas correspondentes ao script. Na consulta, todas estavam vazias; foram identificadas 12 chaves primárias, 13 chaves estrangeiras, 5 restrições de unicidade e 1 CHECK. O script declara MariaDB 10.6 ou superior como alvo; a verificação local em 10.4.32 não estabelece compatibilidade completa entre versões.
 
-O usuário confirmou a inicialização da aplicação após corrigir as variáveis no IntelliJ. Veja o [guia e os erros encontrados](../docs/EXECUCAO_INTELLIJ.md). Os fluxos de gravação, rollback e concorrência no servidor real ainda precisam ser testados. A suíte automatizada continua usando H2 e não executa este script.
+O usuário confirmou a inicialização da aplicação após corrigir as variáveis no IntelliJ. Veja o [guia e os erros encontrados](../docs/EXECUCAO_INTELLIJ.md). Na mesma sessão, o usuário confirmou login, acesso autenticado, criação/listagem de raça e sucesso no teste solicitado de cadastro de animal pelo Swagger. Manejo, vendas, rollback e concorrência no servidor real ainda precisam ser testados. A suíte automatizada continua usando H2 e não executa este script.
 
 ## Regras implementadas no backend
 

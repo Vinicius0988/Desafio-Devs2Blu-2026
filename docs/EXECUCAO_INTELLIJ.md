@@ -108,7 +108,7 @@ Guarde esse valor privadamente e reutilize-o nas próximas execuções. Não ger
 2. Confira no console os perfis `mariadb` e `dev` e a mensagem `Started AgroBoiApplication`. Se faltar uma variável obrigatória, corrija a configuração antes de repetir.
 3. Abra [Swagger UI](http://localhost:8080/swagger-ui.html), ajustando a porta se necessário.
 4. Execute `POST /api/auth/login` com o email e a senha de `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
-5. Copie o campo `token` da resposta e informe-o em **Authorize**. Nas chamadas fora do Swagger, use `Authorization: Bearer <token>`.
+5. Copie somente o valor do campo `token`, sem aspas, clique em **Authorize**, cole em **Value** sem escrever `Bearer`, confirme em **Authorize** e feche em **Close**. O login não autoriza automaticamente o Swagger; após esse passo ele envia o cabeçalho nas chamadas protegidas. Nas chamadas fora do Swagger, use `Authorization: Bearer <token>`.
 6. Teste `GET /api/auth/me`, seguido de `GET /api/animais`. Uma lista vazia é normal em um banco novo.
 
 O administrador só é criado quando ambas as variáveis estão preenchidas e o email não existe. Conta comum existente não é promovida; senha existente não é redefinida. Após o provisionamento, você pode remover `ADMIN_EMAIL` e `ADMIN_PASSWORD` da configuração: a conta permanece no banco. O cadastro pela API está bloqueado.
@@ -180,4 +180,11 @@ Configurar variáveis apenas no terminal não altera uma instância do IntelliJ 
 
 Em 26/11/2026, o responsável pelo projeto confirmou que a aplicação iniciou após mover as variáveis de Program arguments para Environment variables e separar `PORT` de `JWT_EXPIRACAO_MINUTOS`.
 
-A conexão e a estrutura básica do banco foram verificadas por consultas de leitura; a inicialização foi confirmada pelo usuário. Isso não equivale a uma validação completa de login, CRUD, vendas, rollback ou concorrência no MariaDB real. Esses fluxos continuam como próximos testes.
+A conexão e a estrutura básica do banco foram verificadas por consultas de leitura. Na mesma sessão, o usuário confirmou manualmente pelo Swagger:
+
+- Login por `POST /api/auth/login`.
+- Acesso a `GET /api/auth/me` e `GET /api/animais`, após informar o token em Authorize. Antes disso, as chamadas retornavam 401.
+- Criação e listagem de raça por `POST /api/racas` e `GET /api/racas`.
+- Sucesso no teste solicitado de cadastro de animal; não foram registrados IDs ou conteúdo das respostas nesta documentação.
+
+Essas confirmações demonstram autenticação e operações básicas no banco real; não substituem uma validação completa. Próxima etapa: testar pesagens, saúde, alimentação, reprodução, despesas e vendas, incluindo rollback e concorrência. A integração das telas com a API continua pendente. Nenhuma senha ou token é registrado aqui.
