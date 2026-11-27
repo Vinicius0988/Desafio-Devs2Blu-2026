@@ -33,13 +33,13 @@ O script deve ser executado uma vez. Ele não atualiza tabelas de uma versão an
 
 ## Configuração da aplicação
 
-O backend oferece perfis `mysql` (padrão) e `mariadb`. O script desta pasta é destinado ao MariaDB; não é uma migration automática nem é executado ao iniciar o Spring.
+O backend oferece perfis de banco `mariadb` (padrão) e `mysql`, combinados com `dev` ou `prod`. Sem perfis explícitos, usa `mariadb,dev`. O script desta pasta é destinado ao MariaDB; não é uma migration automática nem é executado ao iniciar o Spring.
 
-Com `DDL_AUTO=update`, o Hibernate gera/ajusta tabelas a partir das entidades. Isso não garante a reprodução de todos os detalhes do script: por exemplo, o `CHECK (id = 1)` é explícito no SQL, enquanto o serviço também impõe a fazenda única. Enums e valores padrão podem ter representações diferentes.
+No perfil `dev`, com `DDL_AUTO=update`, o Hibernate gera/ajusta tabelas a partir das entidades. Isso não garante a reprodução de todos os detalhes do script: por exemplo, o `CHECK (id = 1)` é explícito no SQL, enquanto o serviço também impõe a fazenda única. Enums e valores padrão podem ter representações diferentes.
 
-Para usar o esquema manual, execute o script e configure `SPRING_PROFILES_ACTIVE=mariadb` e `DDL_AUTO=validate`. A validação real de compatibilidade ainda está pendente. Não há ferramenta de migrations configurada.
+Para usar o esquema manual, execute o script e configure `SPRING_PROFILES_ACTIVE=mariadb,dev` e `DDL_AUTO=validate` (ou `mariadb,prod`, que já usa `validate`). A validação real de compatibilidade ainda está pendente. Não há ferramenta de migrations configurada.
 
-A conexão usa `DB_URL`, `DB_USER` e, para sobrescrever a senha fixa atual, `SPRING_DATASOURCE_PASSWORD`. `DB_PASSWORD` não é lida pela configuração atual. Veja as [instruções de execução](../README.md#banco-e-execução).
+A conexão usa `DB_URL` e credenciais obrigatórias `DB_USER`/`DB_PASSWORD`. Não há senha fixa no repositório. Veja o [passo a passo no IntelliJ](../docs/EXECUCAO_INTELLIJ.md). A troca do driver não transfere dados entre servidores.
 
 ## O que fica no backend
 
@@ -51,7 +51,9 @@ Alimentação sem `animal_id` refere-se ao rebanho inteiro. Despesa sem `animal_
 
 ## Validação
 
-Estrutura, campos e referências foram conferidos com o SQL e o código. A suíte automatizada usa H2 em modo MariaDB, incluindo testes REST e rollback; ela não executa este script. A execução do SQL e a compatibilidade com servidor MariaDB real ainda precisam ser verificadas. Não há validação de banco real nesta revisão documental.
+Em 26/11/2026, consultas de leitura confirmaram o banco `agroboi` no MariaDB 10.4.32 do XAMPP, com as 12 tabelas e nomes de colunas correspondentes ao script. Na consulta, todas estavam vazias; foram identificadas 12 chaves primárias, 13 chaves estrangeiras, 5 restrições de unicidade e 1 CHECK. O script declara MariaDB 10.6 ou superior como alvo; a verificação local em 10.4.32 não estabelece compatibilidade completa entre versões.
+
+O usuário confirmou a inicialização da aplicação após corrigir as variáveis no IntelliJ. Veja o [guia e os erros encontrados](../docs/EXECUCAO_INTELLIJ.md). Os fluxos de gravação, rollback e concorrência no servidor real ainda precisam ser testados. A suíte automatizada continua usando H2 e não executa este script.
 
 ## Regras implementadas no backend
 

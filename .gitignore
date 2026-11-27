@@ -1,1 +1,8 @@
 *.log
+
+# Configuracoes locais e segredos de execucao
+.env
+.env.*
+!.env.example
+.idea/
+.run/

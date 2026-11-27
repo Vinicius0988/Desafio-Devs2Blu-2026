@@ -54,11 +54,26 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /** CORS para o frontend (páginas HTML abertas em outra porta ou via file://). Restrinja em produção. */
+    /** Origens HTTP/HTTPS explicitas; sirva o frontend por HTTP, não por file://. */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(@Value("${agroboi.cors.origens:*}") String[] origens) {
+    public CorsConfigurationSource corsConfigurationSource(@Value("${agroboi.cors.origens}") String[] origens) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of(origens));
+        List<String> permitidas = java.util.Arrays.stream(origens).map(String::trim).toList();
+        if (permitidas.isEmpty()) throw new IllegalStateException("Defina ao menos uma origem em CORS_ORIGENS.");
+        for (String origem : permitidas) {
+            try {
+                java.net.URI uri = java.net.URI.create(origem);
+                if (!("http".equals(uri.getScheme()) || "https".equals(uri.getScheme()))
+                        || uri.getHost() == null || uri.getRawUserInfo() != null
+                        || uri.getRawQuery() != null || uri.getRawFragment() != null
+                        || (uri.getRawPath() != null && !uri.getRawPath().isEmpty()) || origem.contains("*")) {
+                    throw new IllegalArgumentException();
+                }
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException("CORS_ORIGENS deve conter origens HTTP/HTTPS sem caminho, barra final ou curinga.");
+            }
+        }
+        config.setAllowedOrigins(permitidas);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setMaxAge(3600L);
