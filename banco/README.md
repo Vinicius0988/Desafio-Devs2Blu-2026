@@ -33,13 +33,13 @@ O script deve ser executado uma vez. Ele não atualiza tabelas de uma versão an
 
 ## Configuração da aplicação
 
-O backend oferece perfis `mysql` (padrão) e `mariadb`. O script desta pasta é destinado ao MariaDB; não é uma migration automática nem é executado ao iniciar o Spring.
+O backend oferece perfis de banco `mariadb` (padrão) e `mysql`, combinados com `dev` ou `prod`. Sem perfis explícitos, usa `mariadb,dev`. O script desta pasta é destinado ao MariaDB; não é uma migration automática nem é executado ao iniciar o Spring.
 
-Com `DDL_AUTO=update`, o Hibernate gera/ajusta tabelas a partir das entidades. Isso não garante a reprodução de todos os detalhes do script: por exemplo, o `CHECK (id = 1)` é explícito no SQL, enquanto o serviço também impõe a fazenda única. Enums e valores padrão podem ter representações diferentes.
+No perfil `dev`, com `DDL_AUTO=update`, o Hibernate gera/ajusta tabelas a partir das entidades. Isso não garante a reprodução de todos os detalhes do script: por exemplo, o `CHECK (id = 1)` é explícito no SQL, enquanto o serviço também impõe a fazenda única. Enums e valores padrão podem ter representações diferentes.
 
-Para usar o esquema manual, execute o script e configure `SPRING_PROFILES_ACTIVE=mariadb` e `DDL_AUTO=validate`. A validação real de compatibilidade ainda está pendente. Não há ferramenta de migrations configurada.
+Para usar o esquema manual, execute o script e configure `SPRING_PROFILES_ACTIVE=mariadb,dev` e `DDL_AUTO=validate` (ou `mariadb,prod`, que já usa `validate`). A validação real de compatibilidade ainda está pendente. Não há ferramenta de migrations configurada.
 
-A conexão usa `DB_URL`, `DB_USER` e, para sobrescrever a senha fixa atual, `SPRING_DATASOURCE_PASSWORD`. `DB_PASSWORD` não é lida pela configuração atual. Veja as [instruções de execução](../README.md#banco-e-execução).
+A conexão usa `DB_URL` e credenciais obrigatórias `DB_USER`/`DB_PASSWORD`. Não há senha fixa no repositório. Veja o [passo a passo no IntelliJ](../docs/EXECUCAO_INTELLIJ.md). A troca do driver não transfere dados entre servidores.
 
 ## O que fica no backend
 

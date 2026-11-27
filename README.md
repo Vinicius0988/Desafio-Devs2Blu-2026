@@ -8,6 +8,7 @@ O projeto atende uma única fazenda. O backend usa Java 21 e Spring Boot; o fron
 
 - `src/backend/AgroBoi`: API, regras de negócio, persistência e testes.
 - `src/frontend`: páginas e scripts da interface, ainda sem integração com a API.
+- [Passo a passo de execução no IntelliJ](docs/EXECUCAO_INTELLIJ.md).
 - [Banco e configuração do esquema](banco/README.md).
 - [Dicionário das 12 tabelas](banco/DICIONARIO_DE_DADOS.md).
 - [Regras de negócio e limitações](banco/REGRAS_NEGOCIO.md).
@@ -17,38 +18,33 @@ O projeto atende uma única fazenda. O backend usa Java 21 e Spring Boot; o fron
 
 Requisitos: JDK 21 ou superior, `JAVA_HOME` apontando para o JDK e um servidor MySQL ou MariaDB acessível. O Maven Wrapper está incluído; não é necessário instalar Maven separadamente. A primeira execução precisa baixar as dependências. Não há configuração Docker Compose versionada neste repositório.
 
-O perfil padrão é `mysql`. Para MariaDB, use `SPRING_PROFILES_ACTIVE=mariadb`. Os perfis selecionam uma conexão por execução; não conectam os dois bancos simultaneamente.
+A combinação padrão é `mariadb,dev`. Use `mysql,dev` para desenvolvimento com MySQL e `mariadb,prod` ou `mysql,prod` para produção. Selecione um banco e um ambiente; não combine os dois bancos ou `dev` com `prod`. Perfis explícitos substituem os padrões.
 
-Por padrão, `DDL_AUTO=update` permite ao Hibernate criar/ajustar tabelas, mas o banco `agroboi` deve existir. Outra opção é executar o [script MariaDB](banco/agroboi_mariadb.sql) em um banco novo e usar `DDL_AUTO=validate`; a compatibilidade desse esquema com uma instância real ainda precisa ser validada.
-
-| Configuração | Comportamento atual |
+| Variável | Comportamento |
 |---|---|
-| `SPRING_PROFILES_ACTIVE` | `mysql` por padrão; `mariadb` seleciona o outro driver |
-| `DB_URL` | Opcional; padrão `jdbc:mysql://localhost:3306/agroboi` ou `jdbc:mariadb://localhost:3306/agroboi`, conforme o perfil |
-| `DB_USER` | Usuário do banco; padrão `root` |
-| `SPRING_DATASOURCE_PASSWORD` | Sobrescreve a senha da conexão. Atualmente há uma senha fixa no arquivo de configuração; `DB_PASSWORD` não é lida pelo código atual |
-| `DDL_AUTO` | Padrão `update`; `validate` apenas verifica o esquema |
+| `SPRING_PROFILES_ACTIVE` | Padrão `mariadb,dev` quando não houver perfis explícitos |
+| `DB_URL` | Opcional; endereço local `localhost:3306/agroboi`, com protocolo do banco selecionado |
+| `DB_USER` / `DB_PASSWORD` | Credenciais obrigatórias, sem valores padrão versionados |
+| `JWT_SECRET` | Obrigatório: segredo estável com pelo menos 32 bytes UTF-8 |
+| `JWT_EXPIRACAO_MINUTOS` | Inteiro positivo; padrão `480` |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Provisionamento inicial do fazendeiro; não altera conta existente |
+| `CORS_ORIGENS` | Origens explícitas separadas por vírgula; padrão local `http://localhost:5500,http://127.0.0.1:5500`; obrigatório em `prod` |
+| `DDL_AUTO` | Em `dev`, padrão `update`; em `prod`, não é utilizado, pois o esquema é apenas validado |
 | `PORT` | Porta HTTP; padrão `8080` |
-| `JWT_SECRET` | Segredo com pelo menos 32 bytes em UTF-8. Sem ele, a chave é aleatória e os tokens deixam de valer após reiniciar |
-| `JWT_EXPIRACAO_MINUTOS` | Validade do token; padrão `480` minutos |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Cria administrador na inicialização se ambas estiverem definidas e o email ainda não existir; não promove nem redefine a senha de conta existente |
-| `CORS_ORIGENS` | Origens permitidas, separadas por vírgula; padrão `*` |
 
-Exemplo no PowerShell, a partir da raiz do repositório, com o banco já criado:
+O banco `agroboi` deve existir. Desenvolvimento pode criar/ajustar tabelas; produção exige esquema previamente preparado. A troca de perfil não migra dados entre MySQL e MariaDB. A compatibilidade do SQL manual com o banco real permanece pendente de validação.
+
+**Antes de executar pelo IntelliJ**, configure o JDK, Maven Wrapper e as variáveis da aplicação em **Run > Edit Configurations > Environment variables**. Siga o [guia completo do IntelliJ](docs/EXECUCAO_INTELLIJ.md), que inclui primeiro acesso, geração do segredo JWT, configuração do banco e diagnóstico de erros.
+
+No terminal, após configurar as mesmas variáveis no ambiente, execute em `src/backend/AgroBoi`:
 
 ```powershell
-$env:SPRING_PROFILES_ACTIVE = 'mariadb'
-$env:DB_USER = 'seu_usuario'
-# Defina SPRING_DATASOURCE_PASSWORD no ambiente com a senha real da conexão.
-Set-Location src/backend/AgroBoi
 ./mvnw.cmd spring-boot:run
 ```
 
-No Linux/macOS, use `./mvnw spring-boot:run` na mesma pasta. Configure `ADMIN_EMAIL` e `ADMIN_PASSWORD` antes da primeira execução para provisionar o fazendeiro como administrador.
+No Linux/macOS, use `./mvnw spring-boot:run`. O projeto não carrega `.env` automaticamente. As configurações do IntelliJ e as variáveis de um terminal são independentes.
 
-Com o backend iniciado, acesse [Swagger UI](http://localhost:8080/swagger-ui.html). Faça login em `POST /api/auth/login` com `email` e `senha`; use o token retornado no botão **Authorize**. Nas requisições HTTP, envie `Authorization: Bearer <token>`.
-
-Para visualizar o frontend, abra `src/frontend/index.html` no navegador. As páginas ainda não autenticam nem salvam dados no backend.
+Com o backend iniciado, acesse [Swagger UI](http://localhost:8080/swagger-ui.html), faça login e informe o token em **Authorize**. Sirva o frontend por HTTP em uma origem permitida; abrir por `file://` não permite chamadas à API. As telas ainda precisam ser integradas ao backend.
 
 ## API REST
 
@@ -96,7 +92,6 @@ Frontend: animais, saúde e alimentação usam dados locais (`localStorage`); ou
 
 Pendências conhecidas:
 
-- Retirar a senha fixa da configuração e definir as configurações do ambiente de execução, incluindo JWT e CORS.
 - Validar o esquema, os fluxos e a concorrência no MySQL/MariaDB real.
 - Integrar as telas e testar o fluxo completo pelo navegador.
 - Implementar estorno e correções históricas, se incluídos na entrega; atualmente são bloqueados.
@@ -110,9 +105,9 @@ Na pasta `src/backend/AgroBoi`:
 ./mvnw.cmd -B -ntp test
 ```
 
-Os testes Spring usam o perfil `test`, H2 em memória no modo MariaDB e criação automática do esquema. Não exigem um banco externo nem `DB_PASSWORD`. Execute em um ambiente de testes, sem sobrescrever a conexão H2 nem fornecer credenciais `ADMIN_EMAIL`/`ADMIN_PASSWORD` de uso real, pois os testes limpam registros.
+Os testes Spring usam o perfil `test`, H2 em memória e criação automática do esquema. Credenciais de banco, JWT e provisionamento administrativo são isolados nos recursos de teste; não é preciso definir variáveis locais. Não sobrescreva diretamente as propriedades Spring de conexão, pois os testes limpam registros.
 
-A suíte cobre regras de negócio, integração de vendas, fluxo REST, controle de acesso e inicialização do Spring. Inclui login, acesso protegido, cadastro de animal, pesagem, venda, relatórios e rollback. Isso não substitui testes no banco real ou a integração do navegador.
+A execução desta etapa passou nos 61 testes. A suíte cobre regras de negócio, integração de vendas, fluxo REST, controle de acesso, perfis, JWT, CORS e inicialização do Spring. Inclui login, acesso protegido, cadastro de animal, pesagem, venda, relatórios e rollback. Isso não substitui testes no banco real ou a integração do navegador.
 
 Para os testes de contrato do frontend, com Node.js instalado, a partir da raiz:
 

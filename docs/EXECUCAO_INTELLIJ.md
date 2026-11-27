@@ -1,0 +1,145 @@
+# Execução do AgroBoi no IntelliJ IDEA
+
+Este guia configura o backend do repositório **Desafio-Devs2Blu-2026**. Os valores locais pertencem à configuração de execução do IntelliJ, não aos arquivos Java. Nenhuma migração de dados é realizada pela troca de perfil.
+
+## 1. Preparar Java, Maven e projeto
+
+1. Instale um JDK 21 ou superior. O projeto compila para Java 21.
+2. Abra no IntelliJ a pasta `src/backend/AgroBoi` ou importe seu `pom.xml` como projeto Maven.
+3. Em **File > Project Structure > Project**, selecione o JDK em **Project SDK**. O módulo também deve usar esse SDK.
+4. Em **Settings > Build, Execution, Deployment > Build Tools > Maven**, selecione **Use Maven wrapper**. O repositório fixa a versão do Maven.
+5. Nas opções de **Importing** e **Runner** do Maven, selecione o mesmo JDK para importação e execução.
+6. Na janela Maven, use **Reload All Maven Projects** e aguarde o download das dependências.
+
+O JDK usado para executar a aplicação pode ser diferente do usado pelo próprio IntelliJ; confira a configuração de execução. Referências: [JDKs no IntelliJ](https://support.jetbrains.com/hc/en-us/articles/40252201177618-Which-JDK-is-IntelliJ-IDEA-using-for-your-project) e [execução Maven](https://www.jetbrains.com/help/idea/run-debug-configuration-maven.html).
+
+## 2. Preparar o banco
+
+Inicie o MariaDB e confirme endereço, porta, usuário e senha. O exemplo local usa `localhost:3306` e banco `agroboi`. Se apenas MySQL estiver instalado, siga a alternativa MySQL abaixo.
+
+Para um banco novo de desenvolvimento, execute em seu cliente SQL, com uma conta autorizada:
+
+```sql
+CREATE DATABASE IF NOT EXISTS agroboi
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Use uma conta com acesso a esse banco. Em desenvolvimento com `update`, ela precisa poder criar/alterar tabelas. A configuração do projeto não cria contas de banco nem inicia o serviço MariaDB.
+
+Se já houver dados em MySQL, selecionar MariaDB não os copia. Não execute scripts de criação ou migração sobre dados existentes sem planejar a alteração. A compatibilidade do script manual com o servidor real ainda faz parte da validação do banco; consulte [Banco](../banco/README.md).
+
+## 3. Criar a configuração de execução
+
+1. Abra **Run > Edit Configurations**.
+2. Adicione uma configuração **Application** chamada `AgroBoi - MariaDB dev`. Se houver suporte Spring Boot na sua edição, esse tipo também pode ser usado.
+3. Informe a classe principal `AgroBoi.AgroBoiApplication` e selecione o módulo do backend no classpath.
+4. Selecione JDK 21 ou superior em **JRE/SDK** e a pasta `src/backend/AgroBoi` como diretório de trabalho.
+5. Abra **Environment variables**. Se o campo estiver oculto, procure-o em **Modify options**.
+6. Cadastre cada variável da tabela seguinte e clique em **Apply**. Os nomes das opções podem variar entre versões do IntelliJ.
+
+Referências: [configuração Application](https://www.jetbrains.com/help/idea/run-debug-configuration-java-application.html) e [variáveis de ambiente](https://www.jetbrains.com/help/idea/program-arguments-and-environment-variables.html).
+
+## 4. Preencher as variáveis
+
+| Nome | Valor a informar | Necessidade |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | `mariadb,dev` | Recomendado explicitamente; é a combinação padrão sem perfis ativos |
+| `DB_URL` | `jdbc:mariadb://localhost:3306/agroboi` | Opcional se usar esse endereço local |
+| `DB_USER` | Seu usuário do MariaDB | Obrigatório |
+| `DB_PASSWORD` | A senha desse usuário | Obrigatório; não há senha padrão no repositório |
+| `JWT_SECRET` | Um segredo aleatório estável com no mínimo 32 bytes UTF-8 | Obrigatório |
+| `ADMIN_EMAIL` | Email escolhido para o fazendeiro | Primeiro provisionamento, junto com a senha |
+| `ADMIN_PASSWORD` | Senha de login escolhida para o fazendeiro | Primeiro provisionamento; é diferente da senha do banco |
+| `CORS_ORIGENS` | `http://localhost:5500,http://127.0.0.1:5500` | Esse é o padrão de desenvolvimento; ajuste à porta real do frontend |
+| `PORT` | `8080` | Opcional |
+| `JWT_EXPIRACAO_MINUTOS` | `480` | Opcional; inteiro positivo |
+| `DDL_AUTO` | `update` | Opcional em `dev`; use `validate` para conferir um esquema já preparado |
+
+Preencha os valores no editor de variáveis, sem aspas adicionais. Não coloque credenciais em **Program arguments**, no `pom.xml` ou em arquivos versionados. Mantenha a configuração local e não habilite **Store as project file** com segredos. O `.gitignore` exclui `.idea`, `.run` e arquivos `.env`, mas isso não remove arquivos já rastreados pelo Git.
+
+A aplicação **não carrega arquivos `.env` automaticamente**. Para esse procedimento, use o editor de variáveis do IntelliJ. Remova configurações antigas como `SPRING_DATASOURCE_PASSWORD` e argumentos `--spring.datasource.*` se desejar usar exclusivamente os nomes `DB_*`; propriedades diretas do Spring podem sobrescrever as variáveis documentadas.
+
+### Gerar o segredo JWT
+
+Execute no PowerShell local e copie o resultado para `JWT_SECRET` na configuração do IntelliJ:
+
+```powershell
+$jwtBytes = New-Object byte[] 48
+$jwtRandom = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$jwtRandom.GetBytes($jwtBytes)
+[Convert]::ToBase64String($jwtBytes)
+$jwtRandom.Dispose()
+```
+
+Guarde esse valor privadamente e reutilize-o nas próximas execuções. Não gere uma chave nova a cada início. Trocar a chave invalida tokens existentes e exige novo login. Não use a chave fixa presente nos recursos de teste fora dos testes.
+
+## 5. Executar e acessar
+
+1. Selecione `AgroBoi - MariaDB dev` e pressione **Run**.
+2. Confira no console os perfis `mariadb` e `dev` e a mensagem de inicialização do Spring. Se faltar uma variável obrigatória, corrija a configuração antes de repetir.
+3. Abra [Swagger UI](http://localhost:8080/swagger-ui.html), ajustando a porta se necessário.
+4. Execute `POST /api/auth/login` com o email e a senha de `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
+5. Copie o campo `token` da resposta e informe-o em **Authorize**. Nas chamadas fora do Swagger, use `Authorization: Bearer <token>`.
+6. Teste `GET /api/auth/me`, seguido de `GET /api/animais`. Uma lista vazia é normal em um banco novo.
+
+O administrador só é criado quando ambas as variáveis estão preenchidas e o email não existe. Conta comum existente não é promovida; senha existente não é redefinida. Após o provisionamento, você pode remover `ADMIN_EMAIL` e `ADMIN_PASSWORD` da configuração: a conta permanece no banco. O cadastro pela API está bloqueado.
+
+## 6. Frontend e CORS
+
+Sirva o frontend por HTTP com um servidor estático. Se tiver Python instalado, execute a partir da raiz do repositório:
+
+```powershell
+python -m http.server 5500 --bind 127.0.0.1 --directory src/frontend
+```
+
+Abra `http://127.0.0.1:5500`. O endereço deve coincidir com uma entrada de `CORS_ORIGENS`; `localhost` e `127.0.0.1` são origens distintas. Informe somente protocolo, host e porta, separados por vírgula, sem caminho ou barra final. `*`, padrões com curingas, `null` e `file://` não são aceitos.
+
+As telas ainda não consomem a API. Configurar CORS prepara a comunicação, mas não implementa essa integração. O Swagger servido pelo próprio backend não depende da origem do servidor estático.
+
+## 7. MySQL e produção
+
+| Uso | Perfis | Observação |
+|---|---|---|
+| MariaDB local | `mariadb,dev` | Padrão sem configuração explícita |
+| MySQL local | `mysql,dev` | Use `DB_URL=jdbc:mysql://localhost:3306/agroboi` ou omita a URL para usar esse padrão |
+| MariaDB em produção | `mariadb,prod` | Esquema previamente preparado; apenas validação |
+| MySQL em produção | `mysql,prod` | Mesma política de validação |
+
+Duplique a configuração no IntelliJ se precisar alternar entre bancos. Selecione **um perfil de banco e um de ambiente**; não combine `mysql` com `mariadb`, nem `dev` com `prod`. Perfis explícitos substituem os padrões: somente `mysql`, por exemplo, não ativa `dev` e usa `validate` da configuração base. Consulte [perfis Spring Boot](https://docs.spring.io/spring-boot/reference/features/profiles.html).
+
+Em `prod`, `CORS_ORIGENS` deve ser informado e `DDL_AUTO` não é usado: o projeto configura `validate`. Informe endereço e credenciais reais por ambiente. Não sobrescreva `spring.jpa.hibernate.ddl-auto` diretamente se quiser manter essa proteção. A aplicação não configura HTTPS, backups, serviço do banco ou migrations automaticamente.
+
+## 8. Executar testes no IntelliJ
+
+1. Crie uma configuração **Maven** separada para a pasta do backend.
+2. Informe o comando `test`, selecione o Maven Wrapper e o JDK do projeto.
+3. Não copie variáveis de conexão ou credenciais da configuração da aplicação para essa configuração de testes.
+4. Execute. Os testes Spring ativam `test`, usam H2 em memória e têm um segredo JWT exclusivo de testes. Não é necessário iniciar MariaDB.
+
+Os valores `DB_*`, `ADMIN_*` e `JWT_SECRET` da aplicação não são necessários à suíte. Não sobrescreva diretamente propriedades Spring de conexão nos testes, pois isso pode trocar o banco em memória por um banco real.
+
+Alternativa no terminal, dentro da pasta do backend:
+
+```powershell
+./mvnw.cmd -B -ntp test
+```
+
+## 9. Solução de problemas
+
+| Mensagem ou comportamento | Verificar |
+|---|---|
+| `release version 21 not supported` | JDK do projeto, Maven Runner e configuração de execução; não use Java 11 |
+| Dependências não resolvidas | Importação pelo `pom.xml`, Maven Wrapper, JDK do importador e recarga Maven |
+| Placeholder `DB_USER` ou `DB_PASSWORD` não resolvido | Variáveis na configuração efetivamente selecionada no Run |
+| `Access denied` | Usuário, senha e permissões no banco selecionado |
+| `Connection refused` | Serviço do banco, endereço e porta; o Spring não inicia o banco |
+| `Unknown database` | Crie `agroboi` ou ajuste o nome em `DB_URL` |
+| Falta `JWT_SECRET` ou segredo curto | Gere e configure uma chave estável com pelo menos 32 bytes |
+| Erro de `CORS_ORIGENS` | Origens completas sem curingas, caminhos ou barra final; obrigatório em `prod` |
+| Navegador bloqueia a requisição | Origem e porta reais do frontend e cabeçalho de autenticação |
+| `Schema-validation` | Banco ou esquema diferente do esperado; valide a estrutura antes de usar `prod` |
+| Login retorna 401 | Credenciais, conta ativa e provisionamento; variáveis de admin não alteram conta existente |
+| Operação retorna 403 | Perfil ADMINISTRADOR e origem permitida; cadastro pela API permanece bloqueado |
+| Porta HTTP ocupada | Finalize a execução anterior ou configure outro `PORT` |
+
+Configurar variáveis apenas no terminal não altera uma instância do IntelliJ que já estava aberta. Preencha-as diretamente na configuração de execução ou reinicie a IDE após mudar o ambiente do sistema.

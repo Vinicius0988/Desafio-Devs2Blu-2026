@@ -199,6 +199,23 @@ class ApiFluxoTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void preflightAceitaOrigemConfigurada() throws Exception {
+        mvc.perform(options("/api/animais").header("Origin", "http://localhost:5500")
+                .header("Access-Control-Request-Method", "GET")
+                .header("Access-Control-Request-Headers", "authorization"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5500"));
+    }
+
+    @Test
+    void preflightRejeitaOrigemDesconhecida() throws Exception {
+        mvc.perform(options("/api/animais").header("Origin", "https://outro.exemplo.com")
+                .header("Access-Control-Request-Method", "GET"))
+                .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+    }
+
     private String criarELogar(String email, String perfil) throws Exception {
         var usuario = new AgroBoi.domain.entity.Usuario();
         usuario.setNome("Teste"); usuario.setEmail(email);
